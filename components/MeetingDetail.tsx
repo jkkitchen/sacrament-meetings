@@ -6,27 +6,39 @@ type MeetingDetailProps = {
 
 export default function MeetingDetail({ meeting }: MeetingDetailProps) {
   return (
-    <article>
-      <h1>{meeting.date}</h1>
-      <p>Meeting Type: {meeting.meetingType}</p>
+    <article className="w-full">
+      <h1 className="text-center text-2xl font-bold mb-6">
+        {new Date(`${meeting.date}T00:00:00`).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        })}
+      </h1>
+      <p className="capitalize">Meeting Type: {meeting.meetingType}</p>
       <p>Presiding: {meeting.presiding}</p>
-      <p>Conducting: {meeting.conducting}</p>
+      <p className="mb-4">Conducting: {meeting.conducting}</p>
 
-      <h2>Opening</h2>
-      <p>Hymn: #{meeting.openingHymn.number} - {meeting.openingHymn.title}</p>
-      <p>Prayer: {meeting.openingPrayer}</p>
+      <p>
+        Opening Hymn: #{meeting.openingHymn.number} -{" "}
+        {meeting.openingHymn.title}
+      </p>
+      <p className="mb-4">Opening Prayer: {meeting.openingPrayer}</p>
 
-      <h2>Ward Business</h2>
-      {meeting.wardBusiness.map((item, index) => (
-        <p key={index}>{item.description}</p>
-      ))}
+      <p className="mb-4">
+        Ward Business:
+        {meeting.wardBusiness.map((item, index) => (
+          <p key={index}>{item.description}</p>
+        ))}
+      </p>
 
       <p>Stake Business: {meeting.stakeBusiness ? "Yes" : "No"}</p>
 
-      <h2>Sacrament</h2>
-      <p>Hymn: #{meeting.sacramentHymn.number} - {meeting.sacramentHymn.title}</p>
+      <p>
+        Sacrament Hymn: #{meeting.sacramentHymn.number} -{" "}
+        {meeting.sacramentHymn.title}
+      </p>
 
-      <h2>Speakers</h2>
+      <h2 className="mt-4">Speakers:</h2>
       {meeting.speakers.map((item, index) => (
         <p key={index}>
           {item.name}
@@ -34,11 +46,13 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
         </p>
       ))}
 
-      <h2>Closing</h2>
-      <p>Hymn: #{meeting.closingHymn.number} - {meeting.closingHymn.title}</p>
-      <p>Prayer: {meeting.closingPrayer}</p>
+      <p className="mt-4">
+        Closing Hymn: #{meeting.closingHymn.number} -{" "}
+        {meeting.closingHymn.title}
+      </p>
+      <p className="mb-4">Closing Prayer: {meeting.closingPrayer}</p>
 
-      <h2>Announcements</h2>
+      <h2>Announcements:</h2>
       {meeting.announcements?.map((announcement, index) => (
         <p key={index}>{announcement}</p>
       ))}

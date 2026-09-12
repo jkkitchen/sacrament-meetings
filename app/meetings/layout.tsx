@@ -7,7 +7,7 @@ export default function MeetingsLayout({
 }) {
   return (
     <section>
-      <nav>
+      <nav className=" container mx-auto flex justify-around items-center bg-gray-100 text-grove-green p-4">
         <Link href="/meetings">All Meetings</Link>
         <Link href="/meetings/current">Current Meeting</Link>
       </nav>

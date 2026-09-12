@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 export default function NavLinks() {
   const pathname = usePathname();
   return (
-    <nav className="flex justify-between items-center bg-grove-green text-white">
+    <nav className="flex justify-between items-center bg-grove-green text-white p-4 mt-4">
       <ul className="flex space-x-4">
         <li>
           <Link

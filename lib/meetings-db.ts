@@ -3,7 +3,7 @@ import type { SacramentMeeting } from "./types";
 const meetings: SacramentMeeting[] = [
   {
     id: 1,
-    date: "2026-05-03",
+    date: "2026-08-16",
     meetingType: "regular",
     presiding: "Bishop Smith",
     conducting: "Brother Jones",
@@ -30,7 +30,7 @@ const meetings: SacramentMeeting[] = [
   },
   {
     id: 2,
-    date: "2026-05-10",
+    date: "2026-08-23",
     meetingType: "regular",
     presiding: "Bishop Smith",
     conducting: "Brother Jones",
@@ -57,7 +57,7 @@ const meetings: SacramentMeeting[] = [
   },
   {
     id: 3,
-    date: "2026-05-17",
+    date: "2026-08-30",
     meetingType: "regular",
     presiding: "Bishop Smith",
     conducting: "Brother Jones",
@@ -89,7 +89,7 @@ const meetings: SacramentMeeting[] = [
   },
   {
     id: 4,
-    date: "2026-05-24",
+    date: "2026-09-06",
     meetingType: "regular",
     presiding: "President Clux",
     conducting: "Brother Jones",
@@ -121,7 +121,7 @@ const meetings: SacramentMeeting[] = [
   },
   {
     id: 5,
-    date: "2026-05-31",
+    date: "2026-09-13",
     meetingType: "testimony",
     presiding: "Bishop Smith",
     conducting: "Brother Poole",

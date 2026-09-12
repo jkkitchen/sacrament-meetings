@@ -2,7 +2,7 @@ import NavLinks from "./NavLinks";
 
 export default function Header() {
   return (
-    <header className="bg-white text-black p-4">
+    <header className="bg-white text-black pt-4 px-4">
       <div id="header-title" className="container mx-auto">
         <h1 className="text-grove-green text-4xl">Green Grove Ward</h1>
         <p>
