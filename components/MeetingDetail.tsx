@@ -24,14 +24,13 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
       </p>
       <p className="mb-4">Opening Prayer: {meeting.openingPrayer}</p>
 
-      <p className="mb-4">
-        Ward Business:
-        {meeting.wardBusiness.map((item, index) => (
-          <p key={index}>{item.description}</p>
-        ))}
-      </p>
+      <p>Ward Business:</p>
 
-      <p>Stake Business: {meeting.stakeBusiness ? "Yes" : "No"}</p>
+      {meeting.wardBusiness.map((item, index) => (
+        <p key={index} className="mb-4">{item.description}</p>
+      ))}
+
+      <p className="mb-4">Stake Business: {meeting.stakeBusiness ? "Yes" : "No"}</p>
 
       <p>
         Sacrament Hymn: #{meeting.sacramentHymn.number} -{" "}

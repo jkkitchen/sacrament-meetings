@@ -20,8 +20,18 @@ export default function NavLinks() {
         <li>
           <Link
             href="/meetings"
-            className={pathname === "/meetings" ? "active" : ""}
-            aria-current={pathname === "/meetings" ? "page" : undefined}
+            className={
+              pathname.startsWith("/meetings") &&
+              pathname !== "/meetings/current"
+                ? "active"
+                : ""
+            }
+            aria-current={
+              pathname.startsWith("/meetings") &&
+              pathname !== "/meetings/current"
+                ? "page"
+                : undefined
+            }
           >
             Meetings
           </Link>

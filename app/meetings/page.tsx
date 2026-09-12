@@ -1,8 +1,15 @@
 import Link from "next/link";
-import { getMeetings } from "@/lib/meetings-db";
+import type { SacramentMeeting } from "@/lib/types";
 
-export default function Meetings() {
-  const meetings = getMeetings();
+//Fetching data from the API rather than calling the database function directly so commented out this line.
+// import { getMeetings } from "@/lib/meetings-db";
+
+export default async function Meetings() { //made async when using api fetch
+    //Commented out when switched to API fetch
+    //const meetings = getMeetings();
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/meetings`);
+    const meetings: SacramentMeeting[] = await response.json();
 
   return (
     <div className="flex flex-col flex-1">
