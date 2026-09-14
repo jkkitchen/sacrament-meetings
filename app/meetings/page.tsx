@@ -4,7 +4,7 @@ import type { SacramentMeeting } from "@/lib/types";
 //Fetching data from the API rather than calling the database function directly so commented out this line.
 // import { getMeetings } from "@/lib/meetings-db";
 
-export const dynamic = "force-dynamic"; //Tells Vercel not to pre-render the page, wait for the API request
+export const dynamic = "force-dynamic"; //Tells Next.js not to pre-render the page, wait for the API request
 
 export default async function Meetings() { //made async when using api fetch
     //Commented out when switched to API fetch

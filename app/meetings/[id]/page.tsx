@@ -2,7 +2,7 @@
 import MeetingDetail from "@/components/MeetingDetail";
 import type { SacramentMeeting } from "@/lib/types";
 
-export const dynamic = "force-dynamic"; //Tells Vercel not to pre-render this page (was making the build fail)
+export const dynamic = "force-dynamic"; //Tells Next.js not to pre-render this page (was making the build fail)
 
 type PageProps = {
   params: Promise<{ id: string }>; //gets id from url
