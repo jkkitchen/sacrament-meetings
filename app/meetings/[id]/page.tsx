@@ -2,6 +2,8 @@
 import MeetingDetail from "@/components/MeetingDetail";
 import type { SacramentMeeting } from "@/lib/types";
 
+export const dynamic = "force-dynamic"; //Tells Vercel not to pre-render this page (was making the build fail)
+
 type PageProps = {
   params: Promise<{ id: string }>; //gets id from url
 };
@@ -11,7 +13,13 @@ export default async function MeetingPage({ params }: PageProps) {
 
     //Switched to fetching data from API
     //   const meeting = getMeetingById(Number(id));
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/meetings/${id}`);
+   
+   //If on Vercel, use Vercel URL, otherwise use localhost
+    const baseUrl = process.env.VERCEL_URL
+     ? `https://${process.env.VERCEL_URL}`
+     : "http://localhost:3000";
+
+   const response = await fetch(`${baseUrl}/api/meetings/${id}`);
     
       if (!response.ok) {
         return <p>Meeting not found.</p>;

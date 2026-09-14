@@ -4,11 +4,19 @@ import type { SacramentMeeting } from "@/lib/types";
 //Fetching data from the API rather than calling the database function directly so commented out this line.
 // import { getMeetings } from "@/lib/meetings-db";
 
+export const dynamic = "force-dynamic"; //Tells Vercel not to pre-render the page, wait for the API request
+
 export default async function Meetings() { //made async when using api fetch
     //Commented out when switched to API fetch
     //const meetings = getMeetings();
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/meetings`);
+    //If on Vercel, use Vercel URL, otherwise use localhost
+    const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000";
+
+    const response = await fetch(`${baseUrl}/api/meetings`);
+    
     const meetings: SacramentMeeting[] = await response.json();
 
   return (
