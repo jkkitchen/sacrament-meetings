@@ -13,13 +13,10 @@ export default async function MeetingPage({ params }: PageProps) {
 
     //Switched to fetching data from API
     //   const meeting = getMeetingById(Number(id));
-   
-   //If on Vercel, use Vercel URL, otherwise use localhost
-    const baseUrl = process.env.VERCEL_URL
-     ? `https://${process.env.VERCEL_URL}`
-     : "http://localhost:3000";
-
-   const response = await fetch(`${baseUrl}/api/meetings/${id}`);
+ 
+   const response = await fetch(
+     `${process.env.NEXT_PUBLIC_BASE_URL}/api/meetings/${id}`,
+   );
     
       if (!response.ok) {
         return <p>Meeting not found.</p>;

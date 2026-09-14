@@ -10,12 +10,9 @@ export default async function Meetings() { //made async when using api fetch
     //Commented out when switched to API fetch
     //const meetings = getMeetings();
 
-    //If on Vercel, use Vercel URL, otherwise use localhost
-    const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
-
-    const response = await fetch(`${baseUrl}/api/meetings`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/meetings`,
+    );
     
     const meetings: SacramentMeeting[] = await response.json();
 
