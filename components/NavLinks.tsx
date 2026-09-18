@@ -11,7 +11,7 @@ export default function NavLinks() {
         <li>
           <Link
             href="/"
-            className={pathname === "/" ? "active" : ""}
+            className={`${pathname === "/" ? "active" : ""} hover:underline`}
             aria-current={pathname === "/" ? "page" : undefined}
           >
             Home
@@ -20,12 +20,12 @@ export default function NavLinks() {
         <li>
           <Link
             href="/meetings"
-            className={
+            className={`${
               pathname.startsWith("/meetings") &&
               pathname !== "/meetings/current"
                 ? "active"
                 : ""
-            }
+            } hover:underline`}
             aria-current={
               pathname.startsWith("/meetings") &&
               pathname !== "/meetings/current"
@@ -39,7 +39,9 @@ export default function NavLinks() {
         <li>
           <Link
             href="/meetings/current"
-            className={pathname === "/meetings/current" ? "active" : ""}
+            className={`${
+              pathname === "/meetings/current" ? "active" : ""
+            } hover:underline`}
             aria-current={pathname === "/meetings/current" ? "page" : undefined}
           >
             Current Meeting

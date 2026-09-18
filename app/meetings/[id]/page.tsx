@@ -1,6 +1,7 @@
 // import { getMeetingById } from "@/lib/meetings-db";
 import MeetingDetail from "@/components/MeetingDetail";
 import type { SacramentMeeting } from "@/lib/types";
+import PrintButton from "@/components/PrintButton";
 
 export const dynamic = "force-dynamic"; //Tells Next.js not to pre-render this page (was making the build fail)
 
@@ -27,6 +28,9 @@ export default async function MeetingPage({ params }: PageProps) {
 return (
   <main className="container mx-auto bg-white py-16 px-4 sm:px-8">
     <MeetingDetail meeting={meeting} />
+    <div className="mt-8 flex justify-center">
+      <PrintButton />
+    </div>
   </main>
 );
 }
