@@ -1,10 +1,19 @@
-import { getMeetings } from "@/lib/meetings-db";
+import { getMeetings, getMeetingsTotalPages } from "@/lib/meetings-db";
 
 // GET /api/meetings route
 export async function GET(request: Request) {
-  const date = new URL(request.url).searchParams.get("date"); //optional--also get date from the url so you can display a specific meeting by date
+  const { searchParams } = new URL(request.url);
 
-  const meetings = getMeetings(date);
+  const query = searchParams.get("query") || ""; //default is no query so all results will be displayed
+  const currentPage = Number(searchParams.get("page")) || 1; //default is page 1--or the first 5 meetings
 
-  return Response.json(meetings);
+  const [meetings, totalPages] = await Promise.all([ //get total pages here in API route rather than directly from the server
+    getMeetings(query, currentPage),
+    getMeetingsTotalPages(query),
+  ]);
+
+  return Response.json({
+    meetings,
+    totalPages,
+  });
 }
