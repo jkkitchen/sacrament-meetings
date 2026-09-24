@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { getMeetingByDate } from "@/lib/meetings-db"; //added getMeetingByDate function to db to be used on this page
 
+export const dynamic = "force-dynamic";
+
 export default async function CurrentMeeting() {
   const today = new Date();
   const dayOfWeek = today.getDay(); //0 (Sun) through 6 (Sat)
