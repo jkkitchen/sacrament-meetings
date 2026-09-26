@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { SacramentMeeting } from "@/lib/types";
 import { MeetingSearch } from "@/components/MeetingSearch";
 import { Pagination } from "@/components/Pagination";
+import { deleteMeeting } from "@/lib/actions";
 
 //Fetching data from the API rather than calling the database function directly so commented out this line.
 // import { getMeetings } from "@/lib/meetings-db";
@@ -31,8 +32,9 @@ export default async function Meetings(props: {
   //Updated to be "data" rather than just "meetings" because the API route for this now provides both meeting data and totalPages from db
   const data = await response.json();
   const meetings: SacramentMeeting[] = data.meetings;
-  const totalPages: number = data.totalPages;
+  const totalPages: number = data.totalPages;  
 
+  //Render meeting links
   return (
     <div className="flex flex-col flex-1">
       <main className="flex flex-1 w-full max-w-3xl mx-auto flex-col items-center py-8 px-16 bg-white">
@@ -44,13 +46,47 @@ export default async function Meetings(props: {
 
         <div className="flex flex-col gap-4">
           {meetings.map((meeting) => (
-            <Link
+            <div
               key={meeting.id}
-              href={`/meetings/${meeting.id}`}
-              className="rounded-lg bg-grove-green px-6 py-3 text-white"
+              className="rounded-lg bg-grove-green px-6 py-4 text-white"
             >
-              {new Date(`${meeting.date}T00:00:00`).toLocaleDateString("en-US")}
-            </Link>
+              <h2 className="text-lg font-semibold text-center">
+                {meeting.meetingType.charAt(0).toUpperCase() +
+                  meeting.meetingType.slice(1)}{" "}
+                Meeting
+              </h2>
+
+              <p className="text-center mb-3">
+                {new Date(`${meeting.date}T00:00:00`).toLocaleDateString(
+                  "en-US",
+                )}
+              </p>
+
+              <div className="flex items-center justify-center gap-3">
+                <Link
+                  href={`/meetings/${meeting.id}`}
+                  className="rounded bg-white/15 px-3 py-1 font-semibold hover:bg-white/25"
+                >
+                  View
+                </Link>
+
+                <Link
+                  href={`/meetings/${meeting.id}/edit`}
+                  className="rounded bg-white/15 px-3 py-1 font-semibold hover:bg-white/25"
+                >
+                  Edit
+                </Link>
+
+                <form action={deleteMeeting.bind(null, meeting.id)}>
+                  <button
+                    type="submit"
+                    className="rounded bg-white/15 px-3 py-1 font-semibold hover:bg-white/25 cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                </form>
+              </div>
+            </div>
           ))}
         </div>
 

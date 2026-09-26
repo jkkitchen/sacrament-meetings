@@ -8,8 +8,15 @@ export default function MeetingsLayout({
   return (
     <section>
       <nav className="container mx-auto flex justify-around items-center bg-gray-100 text-grove-green p-4">
-        <Link href="/meetings" className="hover:underline">All Meetings</Link>
-        <Link href="/meetings/current" className="hover:underline">Current Meeting</Link>
+        <Link href="/meetings" className="hover:underline">
+          All Meetings
+        </Link>
+        <Link href="/meetings/current" className="hover:underline">
+          Current Meeting
+        </Link>
+        <Link href="/meetings/new" className="hover:underline">
+          Create New Meeting
+        </Link>
       </nav>
 
       {children}

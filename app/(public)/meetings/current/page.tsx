@@ -9,11 +9,19 @@ export default async function CurrentMeeting() {
   const sunday = new Date(today);
   sunday.setDate(today.getDate() - dayOfWeek); //roll back to Sunday
 
-  const sundayString = sunday.toISOString().split("T")[0];
+  // Format the local date as YYYY-MM-DD (prevents error during the hours of 8PM and 12PM for me when UTC date is different from local date)
+  const year = sunday.getFullYear();
+  const month = String(sunday.getMonth() + 1).padStart(2, "0");
+  const day = String(sunday.getDate()).padStart(2, "0");
+  const sundayString = `${year}-${month}-${day}`;
 
-  const meeting = await getMeetingByDate(sundayString); //query meetings database for this date uisng getMeetingByDate
+  //Query meetings database for this date uisng getMeetingByDate
+  const meeting = await getMeetingByDate(sundayString);
 
-  if (!meeting) { //if no matching meeting exists
+  console.log("Meeting found:", meeting);
+
+  if (!meeting) {
+    //if no matching meeting exists
     redirect("/meetings"); //use redirect to go to the meeting detail page once we've found the current meeting
   }
 
