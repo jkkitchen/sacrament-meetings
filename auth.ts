@@ -24,7 +24,14 @@ export const { auth, signIn, signOut } = NextAuth({
           password,
           user.passwordHash,
         );
-        if (passwordsMatch) return user;
+
+        if (passwordsMatch) {
+          return {
+            id: user.id.toString(), //separate user object into parts so you can convert id to string
+            name: user.name,
+            email: user.email,
+          };
+        }
 
         return null;
       },

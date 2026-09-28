@@ -22,8 +22,12 @@ const cantarell = Cantarell({
 });
 
 export const metadata: Metadata = {
-  title: "Sacrament Meeting Planner",
-  description: "Plan and view sacrament meeting programs.",
+  title: {
+    default: "Sacrament Meeting Planner",
+    template: "%s | WDD 430 Homework",
+  },
+  description: "An app for generating and storing sacrament meeting programs",
+  metadataBase: new URL("https://sacrament-meetings-iota-seven.vercel.app/"),
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
