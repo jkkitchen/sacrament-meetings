@@ -8,7 +8,37 @@ import {
   updateMeeting as updateMeetingInDb,
   deleteMeeting as deleteMeetingFromDb,
 } from "@/lib/meetings-db"; //using aliases so the functions here don't have the same names as the functions being imported
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
+import { auth } from "@/auth";
 
+
+//Authenticate User
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn("credentials", formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return "Invalid email or password.";
+        default:
+          return "Something went wrong.";
+      }
+    }
+    throw error; // re-throw so Next.js handles redirects correctly
+  }
+}
+
+//Create Session Owner
+async function requireOwnerSession() {
+  const session = await auth();
+  if (!session?.user) throw new Error("Not authenticated");
+  return session;
+}
 
 //Create Meeting
 //....Create Meeting Schema using Zod
@@ -81,7 +111,9 @@ export async function createMeeting(
     _prevState: State,
     formData: FormData,
 ): Promise<State> {
-    
+    //Check if authorized to create a meeting
+    await requireOwnerSession();
+
     //Get data from the form
     //...Get speakers first because there are three parts that need to be combined into one
     const speakerNames = formData.getAll("speakerName");
@@ -169,110 +201,115 @@ export async function createMeeting(
 
 //Update Meeting
 export async function updateMeeting(
-    id: number,
-    _prevState: State,
-    formData: FormData
+  id: number,
+  _prevState: State,
+  formData: FormData,
 ): Promise<State> {
-    //Get data from the form
-    //...Get speakers first because you need all three parts combined into one
-    const speakerNames = formData.getAll("speakerName");
-    const speakerTopics = formData.getAll("speakerTopic");
-    const speakerTypes = formData.getAll("speakerType");
+  //Get data from the form
+  //...Get speakers first because you need all three parts combined into one
+  const speakerNames = formData.getAll("speakerName");
+  const speakerTopics = formData.getAll("speakerTopic");
+  const speakerTypes = formData.getAll("speakerType");
 
-    //...Build rawSpeakers object then filter out blank rows
-    const rawSpeakers = speakerNames
-        .map((name, index) => ({
-        name,
-        topic: speakerTopics[index],
-        type: speakerTypes[index],
-        }))
-        .filter(
-        (speaker) =>
-            speaker.name.toString().trim() !== "" ||
-            speaker.topic.toString().trim() !== "",
-        );
+  //Check if authorized to update a meeting
+  await requireOwnerSession();
 
-    const raw = {
-        date: formData.get("date"),
-        meetingType: formData.get("meetingType"),
-        presiding: formData.get("presiding"),
-        conducting: formData.get("conducting"),
+  //...Build rawSpeakers object then filter out blank rows
+  const rawSpeakers = speakerNames
+    .map((name, index) => ({
+      name,
+      topic: speakerTopics[index],
+      type: speakerTypes[index],
+    }))
+    .filter(
+      (speaker) =>
+        speaker.name.toString().trim() !== "" ||
+        speaker.topic.toString().trim() !== "",
+    );
 
-        //Filter announcements for empty rows
-        announcements: formData
-            .getAll("announcements")
-            .filter((item) => item.toString().trim() !== ""),
+  const raw = {
+    date: formData.get("date"),
+    meetingType: formData.get("meetingType"),
+    presiding: formData.get("presiding"),
+    conducting: formData.get("conducting"),
 
-        openingHymn: {
-            number: formData.get("openingHymnNumber"),
-            title: formData.get("openingHymnTitle"),
-        },
+    //Filter announcements for empty rows
+    announcements: formData
+      .getAll("announcements")
+      .filter((item) => item.toString().trim() !== ""),
 
-        openingPrayer: formData.get("openingPrayer"),
+    openingHymn: {
+      number: formData.get("openingHymnNumber"),
+      title: formData.get("openingHymnTitle"),
+    },
 
-        //Filtering optional blank rows
-        wardBusiness: formData
-            .getAll("wardBusiness")
-            .filter((item) => item.toString().trim() !== "")
-            .map((item) => ({
-            description: item,
-            })),
+    openingPrayer: formData.get("openingPrayer"),
 
-        stakeBusiness: formData.get("stakeBusiness") === "true",
+    //Filtering optional blank rows
+    wardBusiness: formData
+      .getAll("wardBusiness")
+      .filter((item) => item.toString().trim() !== "")
+      .map((item) => ({
+        description: item,
+      })),
 
-        sacramentHymn: {
-            number: formData.get("sacramentHymnNumber"),
-            title: formData.get("sacramentHymnTitle"),
-        },
+    stakeBusiness: formData.get("stakeBusiness") === "true",
 
-        speakers: rawSpeakers,
+    sacramentHymn: {
+      number: formData.get("sacramentHymnNumber"),
+      title: formData.get("sacramentHymnTitle"),
+    },
 
-        closingHymn: {
-            number: formData.get("closingHymnNumber"),
-            title: formData.get("closingHymnTitle"),
-        },
+    speakers: rawSpeakers,
 
-        closingPrayer: formData.get("closingPrayer"),
+    closingHymn: {
+      number: formData.get("closingHymnNumber"),
+      title: formData.get("closingHymnTitle"),
+    },
+
+    closingPrayer: formData.get("closingPrayer"),
+  };
+
+  //Check form entries to ensure they are valid, if not, return error
+  const validatedFields = MeetingFormSchema.safeParse(raw);
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: "Missing or invalid fields. Failed to update meeting.",
     };
+  }
 
-    //Check form entries to ensure they are valid, if not, return error
-    const validatedFields = MeetingFormSchema.safeParse(raw);
-    if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: "Missing or invalid fields. Failed to update meeting."
-        };
-    }
+  //Call function from meetings-db.ts to update meeting in the database
+  try {
+    await updateMeetingInDb(id, validatedFields.data);
+  } catch (error) {
+    console.error("Error updating meeting:", error);
+    throw new Error("Database Error: Failed to update meeting.");
+  }
 
-    //Call function from meetings-db.ts to update meeting in the database
-    try {
-        await updateMeetingInDb(id, validatedFields.data);
-    } catch (error) {
-        console.error("Error updating meeting:", error);
-        throw new Error("Database Error: Failed to update meeting.");
-    }
-
-    //Refresh the cached version of meetings page and reload
-    revalidatePath("/meetings");
-    redirect("/meetings");
+  //Refresh the cached version of meetings page and reload
+  revalidatePath("/meetings");
+  redirect("/meetings");
 }
 
 
 //Delete Meeting
 export async function deleteMeeting(id: number) {
-    //Call function from meetings-db.ts to delete meeting in the database
-    try {
-        const deleted = await deleteMeetingFromDb(id);
-        if (!deleted) {
-          throw new Error("Meeting not found.");
-        }
+  //Check if authorized to delete a meeting
+  await requireOwnerSession();
 
-    } catch (error) {
-        console.error("Error deleting meeting:", error);
-        throw new Error("Failed to delete meeting. Please try again later.");
+  //Call function from meetings-db.ts to delete meeting in the database
+  try {
+    const deleted = await deleteMeetingFromDb(id);
+    if (!deleted) {
+      throw new Error("Meeting not found.");
     }
+  } catch (error) {
+    console.error("Error deleting meeting:", error);
+    throw new Error("Failed to delete meeting. Please try again later.");
+  }
 
-    //Refresh the cached version of meetings page and return to meetings page
-    revalidatePath("/meetings");
-    redirect("/meetings");
+  //Refresh the cached version of meetings page and return to meetings page
+  revalidatePath("/meetings");
+  redirect("/meetings");
 }

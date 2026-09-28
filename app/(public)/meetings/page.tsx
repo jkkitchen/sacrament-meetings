@@ -3,6 +3,7 @@ import type { SacramentMeeting } from "@/lib/types";
 import { MeetingSearch } from "@/components/MeetingSearch";
 import { Pagination } from "@/components/Pagination";
 import { deleteMeeting } from "@/lib/actions";
+import { auth } from "@/auth";
 
 //Fetching data from the API rather than calling the database function directly so commented out this line.
 // import { getMeetings } from "@/lib/meetings-db";
@@ -13,6 +14,9 @@ export default async function Meetings(props: {
   //made async when using api fetch--left everything pulling data from API routes rather than back to using server functions on W03
   searchParams?: Promise<{ query?: string; page?: string }>;
 }) {
+  //Add authorization
+  const session = await auth();
+  
   //Add search option
   const searchParams = await props.searchParams;
   const query = searchParams?.query ?? ""; //Get the query from the URL, if there isn't one, make the query an empty string
@@ -70,21 +74,25 @@ export default async function Meetings(props: {
                   View
                 </Link>
 
-                <Link
-                  href={`/meetings/${meeting.id}/edit`}
-                  className="rounded bg-white/15 px-3 py-1 font-semibold hover:bg-white/25"
-                >
-                  Edit
-                </Link>
+                {session?.user && (
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href={`/meetings/${meeting.id}/edit`}
+                      className="rounded bg-white/15 px-3 py-1 font-semibold hover:bg-white/25"
+                    >
+                      Edit
+                    </Link>
 
-                <form action={deleteMeeting.bind(null, meeting.id)}>
-                  <button
-                    type="submit"
-                    className="rounded bg-white/15 px-3 py-1 font-semibold hover:bg-white/25 cursor-pointer"
-                  >
-                    Delete
-                  </button>
-                </form>
+                    <form action={deleteMeeting.bind(null, meeting.id)}>
+                      <button
+                        type="submit"
+                        className="rounded bg-white/15 px-3 py-1 font-semibold hover:bg-white/25 cursor-pointer"
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  </div>
+                )}
               </div>
             </div>
           ))}
